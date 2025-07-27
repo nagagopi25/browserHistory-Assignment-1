@@ -1,66 +1,483 @@
-Browser History
-Helpful
-In this project, let's build a Browser History app by applying the concepts we have learned till now.
+#index.css
+.history-item-container {
+  list-style-type: none;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.time-accessed {
+  margin-bottom: 10px;
+  color: #64748b;
+  font-size: 15px;
+  font-weight: bold;
+}
+.history-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+.history-content {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+.domain-logo {
+  height: 28px;
+  width: 28px;
+  margin-right: 14px;
+}
+.title-domain-container {
+  display: flex;
+  flex-direction: column;
+}
+.title {
+  margin: 0px;
+  color: #475569;
+  font-weight: bold;
+}
+.domain {
+  margin: 0px;
+  color: #64748b;
+  font-weight: 400;
+}
+.button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
 
-Refer to the image below:
+@media screen and (min-width: 768px) {
+  .history-item-container {
+    flex-direction: row;
+    align-items: center;
+  }
+  .time-accessed {
+    width: 100px;
+  }
+  .title {
+    margin-right: 10px;
+  }
+  .title-domain-container {
+    flex-direction: row;
+  }
+}
 
-browser history output
 
-Design Files
-Click to view
-Extra Small (Size < 576px) and Small (Size >= 576px)
-Medium (Size >= 768px), Large (Size >= 992px) and Extra Large (Size >= 1200px) - Browser History
-Medium (Size >= 768px), Large (Size >= 992px) and Extra Large (Size >= 1200px) - Empty History View
-Set Up Instructions
-Click to view
-Download dependencies by running npm install
-Start up the app using npm start
-Completion Instructions
-Functionality to be added
+#BrowserHistory-> index.js
+import './App.css'
+import {Component} from 'react'
+import BrowserHistoryItem from './BrowserHistoryItem'
 
-The app must have the following functionalities
+const initialHistoryList = [
+  {
+    id: 0,
+    timeAccessed: '07:45 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/instagram-img.png',
+    title: 'Instagram',
+    domainUrl: 'instagram.com',
+  },
+  {
+    id: 1,
+    timeAccessed: '05:45 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/twitter-img.png',
+    title: 'Twitter. It’s what’s happening / Twitter',
+    domainUrl: 'twitter.com',
+  },
+  {
+    id: 2,
+    timeAccessed: '04:35 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/facebook-img.png',
+    title: 'Facebook – log in or sign up',
+    domainUrl: 'facebook.com',
+  },
+  {
+    id: 3,
+    timeAccessed: '04:25 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/linkedin-img.png',
+    title: 'LinkedIn: Log In or Sign Up',
+    domainUrl: 'linkedin.com',
+  },
+  {
+    id: 4,
+    timeAccessed: '04:00 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/hashnode-img.png',
+    title: 'Hashnode: Everything you need to start blogging as a developer!',
+    domainUrl: 'hashnode.com',
+  },
+  {
+    id: 5,
+    timeAccessed: '03:25 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/github-img.png',
+    title: 'GitHub: Where the world builds software · GitHub',
+    domainUrl: 'github.com',
+  },
+  {
+    id: 6,
+    timeAccessed: '02:45 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/react-img.png',
+    title: 'React – A JavaScript library for building user interfaces',
+    domainUrl: 'reactjs.org',
+  },
+  {
+    id: 7,
+    timeAccessed: '01:25 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/stackoverflow-img.png',
+    title: 'Stack Overflow - Where Developers Learn, Share, & Build Careers',
+    domainUrl: 'stackoverflow.com',
+  },
+  {
+    id: 8,
+    timeAccessed: '09:25 AM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/gmail-img.png',
+    title: 'Gmail',
+    domainUrl: 'mail.google.com',
+  },
+  {
+    id: 9,
+    timeAccessed: '09:00 AM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/google-img.png',
+    title: 'Google',
+    domainUrl: 'google.com',
+  },
+]
 
-Initially, the list of given history items should be displayed with a delete button for each history item.
-When a non-empty value is provided in the search input, then display the history items which includes the search input irrespective of case
-When the delete button of a history item is clicked, then the respective history item should be deleted from the list of history items
-When a non-empty value is provided in the search input element, and no history item includes the value given in the search input, then Empty History View should be displayed
-When all the history items are deleted, then Empty History View should be displayed
+class App extends Component {
+  state = {
+    userInput: '',
+    historyList: initialHistoryList,
+  }
 
-The App is provided with historyList. It consists of a list of historyItem objects with the following properties in each historyItem object
+  onChangeInput = event => {
+    this.setState({userInput: event.target.value})
+  }
 
-Key	Data Type
-id	Number
-timeAccessed	String
-logoUrl	String
-title	String
-domainUrl	String
-Important Note
-Click to view
+  deleteHistory = id => {
+    const {historyList} = this.state
+    const updatedList = historyList.filter(each => each.id !== id)
+    this.setState({historyList: updatedList})
+  }
 
-The following instructions are required for the tests to pass
+  render() {
+    const {userInput, historyList} = this.state
+    const searchResults = historyList.filter(each =>
+      each.title.toLowerCase().includes(userInput.toLowerCase()),
+    )
 
-The logoUrl in the each history item have alt as domain logo
-The delete button in the history item should have the data-testid as delete
-Resources
-Image URLs
-https://assets.ccbp.in/frontend/react-js/history-website-logo-img.png alt should be app logo
-https://assets.ccbp.in/frontend/react-js/search-img.png alt should be search
-https://assets.ccbp.in/frontend/react-js/delete-img.png alt should be delete
-Colors
+    console.log('Search input:', userInput)
+    console.log('Filtered search results:', searchResults)
+    console.log('Current history list:', historyList)
+    return (
+      <div className="app-container">
+        <div className="app-header">
+          <img
+            src="https://assets.ccbp.in/frontend/react-js/history-website-logo-img.png"
+            alt="app logo"
+            className="app-logo"
+          />
+          <div className="search-container">
+            <img
+              src="https://assets.ccbp.in/frontend/react-js/search-img.png"
+              alt="search"
+              className="search-icon"
+            />
+            <input
+              type="search"
+              placeholder="Search history"
+              className="search-input"
+              onChange={this.onChangeInput}
+              value={userInput}
+            />
+          </div>
+        </div>
 
-Hex: #3367d6
-Hex: #2850a7
-Hex: #ececec
-Hex: #64748b
-Hex: #f8fafc
-Hex: #6697ff
-Hex: #ffffff
-Hex: #475569
+        <div className="app-footer">
+          {searchResults.length === 0 ? (
+            <p>There is no history to show</p>
+          ) : (
+            <ul className="history-list">
+              {searchResults.map(eachHistory => (
+                <BrowserHistoryItem
+                  key={eachHistory.id}
+                  history={eachHistory}
+                  deleteHistory={this.deleteHistory}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    )
+  }
+}
 
-Font-families
-Roboto
-Things to Keep in Mind
-All components you implement should go in the src/components directory.
-Don't change the component folder names as those are the files being imported into the tests.
-Do not remove the pre-filled code
-Want to quickly review some of the concepts you’ve been learning? Take a look at the Cheat Sheets.
+export default App
+#APP.css
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-container {
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+.app-header {
+  background-color: #3367d6;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.app-logo {
+  height: 20px;
+  margin-right: 20px;
+}
+
+.search-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.search-bar-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+  .search-bar-container {
+    width: 60%;
+  }
+}
+
+.logo-container {
+  background-color: #2850a7;
+  height: 40px;
+  width: 40px;
+  padding: 5px 8px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-right: 3px;
+}
+.search-input {
+  height: 40px;
+  width: 100%;
+  background-color: #2850a7;
+  outline: none;
+  border: none;
+  padding: 5px 16px;
+  color: #ffffff;
+}
+
+.app-footer {
+  background-color: #ececec;
+  padding: 30px;
+  min-height: 100vh;
+}
+.history-list-container {
+  background-color: #ffffff;
+  box-shadow: 0px 4px 16px 0px #bfbfbf;
+  padding: 20px;
+  width: 100%;
+}
+.no-history-con {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.no-history {
+  font-size: 18px;
+  color: #475569;
+  font-weight: 500;
+}
+
+#APP.js
+
+import './App.css'
+import {Component} from 'react'
+import BrowserHistoryItem from './BrowserHistoryItem'
+
+const initialHistoryList = [
+  {
+    id: 0,
+    timeAccessed: '07:45 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/instagram-img.png',
+    title: 'Instagram',
+    domainUrl: 'instagram.com',
+  },
+  {
+    id: 1,
+    timeAccessed: '05:45 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/twitter-img.png',
+    title: 'Twitter. It’s what’s happening / Twitter',
+    domainUrl: 'twitter.com',
+  },
+  {
+    id: 2,
+    timeAccessed: '04:35 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/facebook-img.png',
+    title: 'Facebook – log in or sign up',
+    domainUrl: 'facebook.com',
+  },
+  {
+    id: 3,
+    timeAccessed: '04:25 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/linkedin-img.png',
+    title: 'LinkedIn: Log In or Sign Up',
+    domainUrl: 'linkedin.com',
+  },
+  {
+    id: 4,
+    timeAccessed: '04:00 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/hashnode-img.png',
+    title: 'Hashnode: Everything you need to start blogging as a developer!',
+    domainUrl: 'hashnode.com',
+  },
+  {
+    id: 5,
+    timeAccessed: '03:25 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/github-img.png',
+    title: 'GitHub: Where the world builds software · GitHub',
+    domainUrl: 'github.com',
+  },
+  {
+    id: 6,
+    timeAccessed: '02:45 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/react-img.png',
+    title: 'React – A JavaScript library for building user interfaces',
+    domainUrl: 'reactjs.org',
+  },
+  {
+    id: 7,
+    timeAccessed: '01:25 PM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/stackoverflow-img.png',
+    title: 'Stack Overflow - Where Developers Learn, Share, & Build Careers',
+    domainUrl: 'stackoverflow.com',
+  },
+  {
+    id: 8,
+    timeAccessed: '09:25 AM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/gmail-img.png',
+    title: 'Gmail',
+    domainUrl: 'mail.google.com',
+  },
+  {
+    id: 9,
+    timeAccessed: '09:00 AM',
+    logoUrl: 'https://assets.ccbp.in/frontend/react-js/google-img.png',
+    title: 'Google',
+    domainUrl: 'google.com',
+  },
+]
+
+class App extends Component {
+  state = {
+    userInput: '',
+    historyList: initialHistoryList,
+  }
+
+  onChangeInput = event => {
+    this.setState({userInput: event.target.value})
+  }
+
+  deleteHistory = id => {
+    const {historyList} = this.state
+    const updatedList = historyList.filter(each => each.id !== id)
+    this.setState({historyList: updatedList})
+  }
+
+  render() {
+    const {userInput, historyList} = this.state
+    const searchResults = historyList.filter(each =>
+      each.title.toLowerCase().includes(userInput.toLowerCase()),
+    )
+
+    console.log('Search input:', userInput)
+    console.log('Filtered search results:', searchResults)
+    console.log('Current history list:', historyList)
+
+    return (
+      <div className="app-container">
+        <div className="app-header">
+          <img
+            src="https://assets.ccbp.in/frontend/react-js/history-website-logo-img.png"
+            alt="app logo"
+            className="app-logo"
+          />
+          <div className="search-container">
+            <img
+              src="https://assets.ccbp.in/frontend/react-js/search-img.png"
+              alt="search"
+              className="search-icon"
+            />
+            <input
+              type="search"
+              placeholder="Search history"
+              className="search-input"
+              onChange={this.onChangeInput}
+              value={userInput}
+            />
+          </div>
+        </div>
+
+        <div className="app-footer">
+          {searchResults.length === 0 ? (
+            <p>There is no history to show</p>
+          ) : (
+            <ul className="history-list">
+              {searchResults.map(eachHistory => (
+                <BrowserHistoryItem
+                  key={eachHistory.id}
+                  history={eachHistory}
+                  deleteHistory={this.deleteHistory}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    )
+  }
+}
+
+export default App
+
+#index.js
+// index.js
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+import './index.css' // optional, if you have styles
+
+const root = ReactDOM.createRoot(document.getElementById('root'))
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+)
+
+
+#SetupTEST.js
+/* eslint-disable */
+
+import '@testing-library/jest-dom'
+import {configure} from '@testing-library/react'
+
+configure({testIdAttribute: 'data-testid'})
